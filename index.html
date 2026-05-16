@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gözlük Etiket Oluşturucu</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .panel {
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    input {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .add-btn {
+      background: black;
+      color: white;
+    }
+
+    .print-btn {
+      background: green;
+      color: white;
+      margin-top: 15px;
+    }
+
+    .labels {
+      display: grid;
+      grid-template-columns: repeat(5, 3.5cm);
+      gap: 2mm;
+      justify-content: start;
+    }
+
+    .label {
+      width: 3.5cm;
+      height: 1.5cm;
+      border: 1px solid black;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      background: white;
+    }
+
+    .brand {
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .model {
+      font-size: 9px;
+      line-height: 1;
+    }
+
+    .price {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .delete {
+      position: absolute;
+      top: 0;
+      right: 3px;
+      color: red;
+      cursor: pointer;
+      font-size: 10px;
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .panel {
+        display: none;
+      }
+
+      .delete {
+        display: none;
+      }
+
+      @page {
+        size: A4 portrait;
+        margin: 0.5cm;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="panel">
+      <h1>Gözlük Etiket Oluşturucu</h1>
+
+      <div class="form-grid">
+        <input type="text" id="brand" placeholder="Marka" />
+        <input type="text" id="model" placeholder="Model" />
+        <input type="text" id="price" placeholder="Fiyat" />
+
+        <button class="add-btn" onclick="addLabel()">
+          Etiket Ekle
+        </button>
+      </div>
+
+      <button class="print-btn" onclick="window.print()">
+        Toplu Baskı Al
+      </button>
+    </div>
+
+    <div class="labels" id="labels"></div>
+
+  </div>
+
+  <script>
+    function addLabel() {
+      const brand = document.getElementById('brand').value;
+      const model = document.getElementById('model').value;
+      const price = document.getElementById('price').value;
+
+      if (!brand || !model || !price) {
+        alert('Lütfen tüm alanları doldurun');
+        return;
+      }
+
+      const labels = document.getElementById('labels');
+
+      const div = document.createElement('div');
+      div.className = 'label';
+
+      div.innerHTML = `
+        <div class="delete" onclick="this.parentElement.remove()">×</div>
+        <div class="brand">${brand}</div>
+        <div class="model">${model}</div>
+        <div class="price">₺${price}</div>
+      `;
+
+      labels.appendChild(div);
+
+      document.getElementById('brand').value = '';
+      document.getElementById('model').value = '';
+      document.getElementById('price').value = '';
+    }
+  </script>
+
+</body>
+</html>
