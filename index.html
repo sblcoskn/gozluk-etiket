@@ -159,34 +159,83 @@
   </div>
 
   <script>
+    let groupedLabels = JSON.parse(localStorage.getItem('groupedLabels')) || {};
+
+    function saveLabels() {
+      localStorage.setItem('groupedLabels', JSON.stringify(groupedLabels));
+    }
+
+    function renderLabels() {
+      const labelsArea = document.getElementById('labels');
+      labelsArea.innerHTML = '';
+
+      Object.keys(groupedLabels).sort().forEach((brand) => {
+        const groupTitle = document.createElement('div');
+        groupTitle.style.gridColumn = '1 / -1';
+        groupTitle.style.fontWeight = 'bold';
+        groupTitle.style.fontSize = '18px';
+        groupTitle.style.margin = '10px 0 5px';
+        groupTitle.innerText = brand;
+
+        labelsArea.appendChild(groupTitle);
+
+        groupedLabels[brand].forEach((item) => {
+          const div = document.createElement('div');
+          div.className = 'label';
+
+          div.innerHTML = `
+            <div class="delete" onclick="removeLabel('${brand}', ${item.id})">×</div>
+            <div class="brand">${item.brand}</div>
+            <div class="model">${item.model}</div>
+            <div class="price">₺${item.price}</div>
+          `;
+
+          labelsArea.appendChild(div);
+        });
+      });
+    }
+
     function addLabel() {
-      const brand = document.getElementById('brand').value;
-      const model = document.getElementById('model').value;
-      const price = document.getElementById('price').value;
+      const brand = document.getElementById('brand').value.trim();
+      const model = document.getElementById('model').value.trim();
+      const price = document.getElementById('price').value.trim();
 
       if (!brand || !model || !price) {
         alert('Lütfen tüm alanları doldurun');
         return;
       }
 
-      const labels = document.getElementById('labels');
+      if (!groupedLabels[brand]) {
+        groupedLabels[brand] = [];
+      }
 
-      const div = document.createElement('div');
-      div.className = 'label';
+      groupedLabels[brand].push({
+        id: Date.now(),
+        brand,
+        model,
+        price
+      });
 
-      div.innerHTML = `
-        <div class="delete" onclick="this.parentElement.remove()">×</div>
-        <div class="brand">${brand}</div>
-        <div class="model">${model}</div>
-        <div class="price">₺${price}</div>
-      `;
-
-      labels.appendChild(div);
+      saveLabels();
+      renderLabels();
 
       document.getElementById('brand').value = '';
       document.getElementById('model').value = '';
       document.getElementById('price').value = '';
     }
+
+    function removeLabel(brand, id) {
+      groupedLabels[brand] = groupedLabels[brand].filter(item => item.id !== id);
+
+      if (groupedLabels[brand].length === 0) {
+        delete groupedLabels[brand];
+      }
+
+      saveLabels();
+      renderLabels();
+    }
+
+    renderLabels();
   </script>
 
 </body>
